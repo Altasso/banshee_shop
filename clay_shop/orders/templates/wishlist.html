@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Избранное{% endblock %}
+
+{% block content %}
+<h2><i class="bi bi-heart"></i> Избранное</h2>
+<hr>
+
+<div class="row" id="wishlist-container">
+    {% if wishlist_items %}
+        {% for item in wishlist_items %}
+        <div class="col-md-4 mb-4" id="wishlist-item-{{ item.id }}">
+            <div class="card h-100">
+                {% if item.product.images.first %}
+                    <img src="{{ item.product.images.first.image.url }}" class="card-img-top" alt="{{ item.product.name }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.product.name }}</h5>
+                    <p class="card-text text-muted small">{{ item.product.description|truncatewords:10 }}</p>
+                    <p class="h5 text-primary">{{ item.product.price }} ₽</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <button class="btn btn-primary"
+                                hx-post="{% url 'orders:add_to_cart' item.product.id %}"
+                                hx-target="#messages-container">
+                            <i class="bi bi-cart-plus"></i> В корзину
+                        </button>
+                        <button class="btn btn-outline-danger"
+                                hx-delete="{% url 'orders:remove_wishlist_item' item.id %}"
+                                hx-target="#wishlist-item-{{ item.id }}"
+                                hx-swap="outerHTML">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-heart"></i> В избранном пока нет товаров
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

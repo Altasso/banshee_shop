@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'products:list' %}">Товары</a></li>
+        {% if product.category %}
+            <li class="breadcrumb-item"><a href="{% url 'products:category' product.category.id %}">{{ product.category.name }}</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Галерея изображений -->
+    <div class="col-md-6">
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for img in product.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ img.image.url }}" class="d-block w-100" alt="{{ product.name }}" style="max-height: 500px; object-fit: contain;">
+                    </div>
+                {% empty %}
+                    <div class="carousel-item active">
+                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
+                            <i class="bi bi-image text-white" style="font-size: 5rem;"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if product.images.count > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Информация о товаре -->
+    <div class="col-md-6">
+        <h1>{{ product.name }}</h1>
+
+        <!-- Рейтинг -->
+        <div class="mb-3">
+            {% for i in "12345" %}
+                <i class="bi bi-star-fill text-warning"></i>
+            {% endfor %}
+            <span class="text-muted">({{ product.reviews.count }} отзывов)</span>
+        </div>
+
+        <!-- Цена -->
+        <h2 class="text-primary mb-4">{{ product.price }} ₽</h2>
+
+        <!-- Статус наличия -->
+        <div class="mb-4">
+            {% if product.stock > 0 %}
+                <span class="badge bg-success fs-6">
+                    <i class="bi bi-check-circle"></i> В наличии ({{ product.stock }} шт.)
+                </span>
+            {% else %}
+                <span class="badge bg-danger fs-6">
+                    <i class="bi bi-x-circle"></i> Нет в наличии
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Описание -->
+        <div class="mb-4">
+            <h5>Описание</h5>
+            <p>{{ product.description }}</p>
+        </div>
+
+        <!-- Действия -->
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-lg"
+                    hx-post="{% url 'orders:add_to_cart' product.id %}"
+                    hx-target="#messages-container"
+                    {% if product.stock == 0 %}disabled{% endif %}>
+                <i class="bi bi-cart-plus"></i> Добавить в корзину
+            </button>
+            <button class="btn btn-outline-danger"
+                    hx-post="{% url 'orders:toggle_wishlist' product.id %}"
+                    hx-swap="outerHTML">
+                <i class="bi bi-heart"></i> В избранное
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Отзывы -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h3>Отзывы покупателей</h3>
+        <hr>
+
+        <div id="reviews-container">
+            {% include 'products/partials/reviews.html' %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="card mt-4">
+            <div class="card-header">Оставить отзыв</div>
+            <div class="card-body">
+                <form hx-post="{% url 'products:add_review' product.id %}"
+                      hx-target="#reviews-container"
+                      hx-swap="afterbegin">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Рейтинг</label>
+                        <select class="form-select" name="rating" required>
+                            <option value="5">5 - Отлично</option>
+                            <option value="4">4 - Хорошо</option>
+                            <option value="3">3 - Нормально</option>
+                            <option value="2">2 - Плохо</option>
+                            <option value="1">1 - Ужасно</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Комментарий</label>
+                        <textarea class="form-control" name="comment" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'products:categories' %}">Категории</a></li>
+        <li class="breadcrumb-item active">{{ category.name }}</li>
+    </ol>
+</nav>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>{{ category.name }}</h2>
+        {% if category.description %}
+            <p class="text-muted">{{ category.description }}</p>
+        {% endif %}
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="bi bi-sort-down"></i> Сортировка
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="?sort=price_asc" hx-get="?sort=price_asc" hx-target="#products-container">Сначала дешевые</a></li>
+                <li><a class="dropdown-item" href="?sort=price_desc" hx-get="?sort=price_desc" hx-target="#products-container">Сначала дорогие</a></li>
+                <li><a class="dropdown-item" href="?sort=popular" hx-get="?sort=popular" hx-target="#products-container">Популярные</a></li>
+                <li><a class="dropdown-item" href="?sort=new" hx-get="?sort=new" hx-target="#products-container">Новинки</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Подкатегории -->
+{% if category.subcategories.exists %}
+<div class="mb-4">
+    <h5>Подкатегории</h5>
+    <div class="d-flex flex-wrap gap-2">
+        {% for subcat in category.subcategories.all %}
+            <a href="{% url 'products:category' subcat.id %}" class="btn btn-outline-primary">
+                {{ subcat.name }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div id="products-container">
+    {% include 'products/partials/product_grid.html' %}
+</div>
+{% endblock %}

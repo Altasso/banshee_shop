@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    Уникальные изделия ручной работы
+                </h1>
+                <p class="text-xl mb-8 text-pink-100">
+                    Украшения, декор и подарки из полимерной глины от талантливых мастеров
+                </p>
+                <div class="flex space-x-4">
+                    <a href="{% url 'products:catalog' %}" 
+                       class="bg-white text-pink-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Смотреть каталог
+                    </a>
+                    <a href="{% url 'seller:register' %}" 
+                       class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-pink-500 transition">
+                        Стать продавцом
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:block">
+                <img src="/static/images/hero-image.png" alt="Изделия из полимерной глины" 
+                     class="rounded-lg shadow-2xl">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-bold text-center mb-12">Популярные категории</h2>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {% for category in categories %}
+        <a href="{% url 'products:catalog' %}?category={{ category.id }}" 
+           class="group bg-white rounded-lg shadow-md hover:shadow-xl transition p-6 text-center">
+            <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-pink-200 transition">
+                <i class="fas {{ category.icon }} text-2xl text-pink-500"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800">{{ category.name }}</h3>
+            <p class="text-sm text-gray-500 mt-1">{{ category.product_count }} товаров</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="bg-gray-100 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold">Популярные товары</h2>
+            <a href="{% url 'products:catalog' %}" class="text-pink-500 hover:text-pink-600 font-semibold">
+                Смотреть все <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for product in featured_products %}
+            <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group">
+                <a href="{% url 'products:detail' product.id %}">
+                    <div class="relative overflow-hidden h-64">
+                        <img src="{{ product.main_image.url }}" 
+                             alt="{{ product.name }}"
+                             class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                        {% if product.discount %}
+                        <span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">
+                            -{{ product.discount }}%
+                        </span>
+                        {% endif %}
+                    </div>
+                </a>
+                
+                <div class="p-4">
+                    <a href="{% url 'products:detail' product.id %}" class="hover:text-pink-500">
+                        <h3 class="font-semibold text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+                    </a>
+                    
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400 text-sm">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.rating %}
+                                <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-gray-500 text-sm ml-2">({{ product.reviews_count }})</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            {% if product.discount %}
+                            <span class="text-gray-400 line-through text-sm">{{ product.original_price }} ₽</span>
+                            <span class="text-pink-500 font-bold text-lg ml-2">{{ product.price }} ₽</span>
+                            {% else %}
+                            <span class="text-gray-800 font-bold text-lg">{{ product.price }} ₽</span>
+                            {% endif %}
+                        </div>
+                        
+                        <button hx-post="{% url 'orders:add_to_cart' product.id %}"
+                                hx-target="#cart-count"
+                                hx-swap="innerHTML"
+                                class="bg-pink-500 text-white p-2 rounded-lg hover:bg-pink-600 transition">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-hands text-3xl text-pink-500"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Ручная работа</h3>
+            <p class="text-gray-600">Каждое изделие создано с любовью и вниманием к деталям</p>
+        </div>
+        
+        <div class="text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shield-alt text-3xl text-purple-500"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Безопасная сделка</h3>
+            <p class="text-gray-600">Гарантия возврата средств и защита покупателя</p>
+        </div>
+        
+        <div class="text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-shipping-fast text-3xl text-blue-500"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Быстрая доставка</h3>
+            <p class="text-gray-600">Отправка в течение 1-3 дней по всей России</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-pink-500 text-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-4">Станьте частью нашего сообщества</h2>
+        <p class="text-xl mb-8 text-pink-100">
+            Продавайте свои изделия тысячам покупателей по всей стране
+        </p>
+        <a href="{% url 'seller:register' %}" 
+           class="inline-block bg-white text-pink-500 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+            Начать продавать
+        </a>
+    </div>
+</section>
+{% endblock %}

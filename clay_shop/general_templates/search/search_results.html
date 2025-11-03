@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск: {{ query }}{% endblock %}
+
+{% block content %}
+<h2><i class="bi bi-search"></i> Результаты поиска: "{{ query }}"</h2>
+<hr>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form method="get" action="{% url 'search' %}" class="input-group">
+            <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Поиск товаров...">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i> Искать
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if products %}
+    <p class="text-muted">Найдено товаров: {{ products.count }}</p>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for product in products %}
+            {% include 'partials/product_card.html' %}
+        {% endfor %}
+    </div>
+{% else %}
+    {% include 'partials/empty_state.html' with icon="inbox" title="Ничего не найдено" description="Попробуйте изменить запрос" action_url="/" action_icon="house" action_text="На главную" %}
+{% endif %}
+{% endblock %}

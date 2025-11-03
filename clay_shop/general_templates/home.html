@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<!-- Главный баннер -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner rounded">
+                <div class="carousel-item active">
+                    <div class="bg-primary text-white p-5 rounded" style="min-height: 400px; display: flex; align-items: center;">
+                        <div class="container">
+                            <h1 class="display-4 fw-bold">Добро пожаловать в наш магазин!</h1>
+                            <p class="lead">Лучшие товары по доступным ценам</p>
+                            <a href="{% url 'products:catalog' %}" class="btn btn-light btn-lg">
+                                <i class="bi bi-shop"></i> Начать покупки
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="bg-success text-white p-5 rounded" style="min-height: 400px; display: flex; align-items: center;">
+                        <div class="container">
+                            <h1 class="display-4 fw-bold">Скидки до 50%</h1>
+                            <p class="lead">На все категории товаров</p>
+                            <a href="{% url 'products:catalog' %}?sale=1" class="btn btn-light btn-lg">
+                                <i class="bi bi-tag"></i> Смотреть акции
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="bg-info text-white p-5 rounded" style="min-height: 400px; display: flex; align-items: center;">
+                        <div class="container">
+                            <h1 class="display-4 fw-bold">Бесплатная доставка</h1>
+                            <p class="lead">При заказе от 3000 рублей</p>
+                            <a href="{% url 'products:catalog' %}" class="btn btn-light btn-lg">
+                                <i class="bi bi-truck"></i> Узнать подробнее
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Преимущества -->
+<div class="row mb-5">
+    <div class="col-md-3">
+        <div class="card text-center h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-truck text-primary" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Быстрая доставка</h5>
+                <p class="card-text text-muted">Доставим за 1-3 дня</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-shield-check text-success" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Гарантия качества</h5>
+                <p class="card-text text-muted">Только оригинальные товары</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-credit-card text-info" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Удобная оплата</h5>
+                <p class="card-text text-muted">Любым удобным способом</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-headset text-warning" style="font-size: 3rem;"></i>
+                <h5 class="card-title mt-3">Поддержка 24/7</h5>
+                <p class="card-text text-muted">Всегда готовы помочь</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Популярные категории -->
+<div class="mb-5">
+    <h2 class="mb-4"><i class="bi bi-grid"></i> Популярные категории</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-4">
+        {% for category in popular_categories %}
+        <div class="col">
+            <a href="{% url 'products:category_detail' category.id %}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm hover-shadow">
+                    {% if category.image %}
+                        <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-gradient bg-primary text-white d-flex align-items-center justify-content-center" style="height: 150px;">
+                            <i class="bi bi-tag" style="font-size: 2rem;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h6 class="card-title">{{ category.name }}</h6>
+                        <small class="text-muted">{{ category.products.count }} товаров</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Новинки -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-star"></i> Новинки</h2>
+        <a href="{% url 'products:catalog' %}?sort=new" class="btn btn-outline-primary">
+            Смотреть все <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for product in new_products %}
+            {% include 'partials/product_card.html' with product=product %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Популярные товары -->
+<div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-fire"></i> Популярные товары</h2>
+        <a href="{% url 'products:catalog' %}?sort=popular" class="btn btn-outline-primary">
+            Смотреть все <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for product in popular_products %}
+            {% include 'partials/product_card.html' with product=product %}
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+</style>
+{% endblock %}

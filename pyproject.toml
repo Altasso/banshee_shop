@@ -1,0 +1,59 @@
+[project]
+name = "banshee-shop"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "crispy-bootstrap5>=2025.6",
+    "django>=5.2.5",
+    "django-admin-interface>=0.30.1",
+    "django-cors-headers>=4.7.0",
+    "django-crispy-forms>=2.4",
+    "django-debug-toolbar>=6.0.0",
+    "django-extensions>=4.1",
+    "django-htmx>=1.26.0",
+    "django-imagekit>=5.0.0",
+    "django-pytest>=0.2.0",
+    "djangorestframework>=3.16.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "dotenv>=0.9.9",
+    "drf-spectacular>=0.28.0",
+    "factory-boy>=3.3.3",
+    "pillow>=11.3.0",
+    "psycopg2-binary>=2.9.10",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-django>=4.11.1",
+    "python-slugify>=8.0.4",
+    "yookassa>=3.6.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+]
+ignore = ["E501", "F401"]
+
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "auto"
+docstring-code-format = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = "tests.py test_*.py *_tests.py"
+python_classes = "Test*"
+python_functions = "test_*"
