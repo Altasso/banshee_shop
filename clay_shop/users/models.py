@@ -10,10 +10,9 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=31)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
-    role = models.CharField(max_length=31, default='customer')
+    role = models.CharField(max_length=31, default="customer")
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]

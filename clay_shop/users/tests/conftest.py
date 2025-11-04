@@ -33,26 +33,29 @@ def create_user(db):
         user.set_password(password)
         user.save()
         return user
+
     return _create_user
+
 
 @pytest.fixture
 def sample_user(create_user):
     return create_user(
-        username='sampleuser',
-        email='sample@example.com',
-        first_name='Sample',
-        last_name='User'
+        username="sampleuser",
+        email="sample@example.com",
+        first_name="Sample",
+        last_name="User",
     )
+
 
 @pytest.fixture
 def multiple_user(create_user):
     users = []
     for i in range(5):
         user = create_user(
-            username=f'user{i}',
-            email=f'user{i}',
-            first_name=f'First{i}',
-            last_name=f'Last{i}',
+            username=f"user{i}",
+            email=f"user{i}",
+            first_name=f"First{i}",
+            last_name=f"Last{i}",
         )
         users.append(user)
     return users

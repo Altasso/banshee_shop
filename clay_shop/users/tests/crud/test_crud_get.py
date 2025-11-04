@@ -12,7 +12,7 @@ class TestCrudUserGet:
     def test_get_all_users(self, multiple_user):
         users = CrudUser.get_all_users()
         assert users.count() == 5
-        assert list(users) == sorted(users, key=lambda u: u.create_at, reverse=True)
+        assert list(users) == sorted(users, key=lambda u: u.created_at, reverse=True)
 
     def test_get_user_by_id_exists(self, sample_user):
         user = CrudUser.get_user_by_id(sample_user.id)

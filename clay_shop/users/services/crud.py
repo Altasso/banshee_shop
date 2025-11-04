@@ -33,7 +33,7 @@ class CrudUser:
             first_name=data.get("first_name"),
             last_name=data.get("last_name"),
             password=data.get("password"),
-            role=data.get("role"),
+            role=data.get("role", "customer"),
             is_verified=data.get("is_verified", False),
         )
         return user
