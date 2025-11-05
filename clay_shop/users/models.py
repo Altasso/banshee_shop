@@ -5,15 +5,14 @@ from django.db import models
 
 # Create your models here.
 class User(AbstractUser):
-
-    CUSTOMER = 'customer'
-    SELLER = 'seller'
-    ADMIN = 'admin'
+    CUSTOMER = "customer"
+    SELLER = "seller"
+    ADMIN = "admin"
 
     ROLE_CHOICES = [
-        (CUSTOMER, 'Покупатель'),
-        (SELLER, 'Продавец'),
-        (ADMIN, 'Админ'),
+        (CUSTOMER, "Покупатель"),
+        (SELLER, "Продавец"),
+        (ADMIN, "Админ"),
     ]
 
     email = models.EmailField(unique=True)
@@ -41,12 +40,15 @@ class User(AbstractUser):
     @property
     def is_customer(self):
         return self.role == self.CUSTOMER
+
     @property
     def is_seller(self):
-            return self.role == self.SELLER
+        return self.role == self.SELLER
+
     @property
     def is_admin(self):
-            return self.role == self.ADMIN or self.is_superuser
+        return self.role == self.ADMIN or self.is_superuser
+
 
 class UserAddress(models.Model):
     user_id = models.ForeignKey(

@@ -1,6 +1,7 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -12,10 +13,12 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import UserCreateForm, UserUpdateForm
+from .forms import UserAddressForm, UserCreateForm, UserProfileForm, UserUpdateForm
 from .mixins import AdminRequiredMixin, OwnerOrAdminMixin
-from .models import User
-from .services.crud import CrudUser
+from .models import User, UserAddress, UserProfile
+from .services.user_address_crud import UserAddressCrud
+from .services.user_crud import CrudUser
+from .services.user_profile_crud import UserProfileCrud
 
 
 # Create your views here.
@@ -87,13 +90,14 @@ class UserUpdateView(OwnerOrAdminMixin, SuccessMessageMixin, UpdateView):
             form.add_error(None, e)
             return self.form_invalid(form)
 
+
 class UserDeleteView(AdminRequiredMixin, DeleteView):
     model = User
     template_name = ...
-    success_url = reverse_lazy('user-list')
+    success_url = reverse_lazy("user-list")
 
     def get_object(self, queryset=None):
-        user = CrudUser.get_user_by_id(self.kwargs.get('pk'))
+        user = CrudUser.get_user_by_id(self.kwargs.get("pk"))
         if not user:
             raise Http404("Пользователь не найден")
         return user
@@ -102,7 +106,103 @@ class UserDeleteView(AdminRequiredMixin, DeleteView):
         self.object = self.get_object()
         success = CrudUser.delete_user(self.object.id)
         if success:
-            messages.success(request, f"Пользователь {self.object.email} успешно удален")
+            messages.success(
+                request, f"Пользователь {self.object.email} успешно удален"
+            )
         else:
             messages.error(request, "Ошибка при удалении пользователя")
+        return redirect(self.success_url)
+
+
+class UserProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = UserProfile
+    form_class = UserProfileForm
+    template_name = ...
+    success_message = "Профиль успешно обновлен"
+
+    def get_object(self, queryset=None):
+        return UserProfileCrud.get_or_create_profile(self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy("user-profile")
+
+    def form_valid(self, form):
+        profile = UserProfileCrud.update_profile(self.request.user, form.cleaned_data)
+        messages.success(self.request, self.success_message)
+        return redirect(self.get_success_url())
+
+
+class UserAddressListView(LoginRequiredMixin, SuccessMessageMixin, ListView):
+    model = UserAddress
+    template_name = ...
+    context_object_name = "addresses"
+
+    def get_queryset(self):
+        return UserAddressCrud.get_user_address(self.request.user)
+
+
+class UserAddressCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = UserAddress
+    form_class = UserAddressForm
+    template_name = ...
+    success_url = reverse_lazy("address-list")
+    success_message = "Адрес успешно добавлен"
+
+    def form_valid(self, form):
+        address = UserAddressCrud.create_address(self.request.user, form.cleaned_data)
+        messages.success(self.request, self.success_message)
+        return redirect(self.success_url)
+
+
+class UserAddressUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = UserAddress
+    form_class = UserAddressForm
+    template_name = ...
+    success_url = reverse_lazy("address-list")
+    success_message = "Адрес успешно обновлен"
+
+    def get_object(self, queryset=None):
+        address = UserAddressCrud.get_address_by_id(self.kwargs.get("pk"))
+        if not address:
+            raise Http404("Адрес не найден")
+
+        if not UserAddressCrud.validate_address_owner(address, self.request.user):
+            raise PermissionDenied
+
+        return address
+
+    def form_valid(self, form):
+        address = UserAddressCrud.update_address(self.object.id, form.cleaned_data)
+        if not address:
+            messages.error(self.request, "Ошибка при обновлении адреса")
+            return self.form_invalid(form)
+
+        messages.success(self.request, self.success_message)
+        return redirect(self.success_url)
+
+
+class UserAddressDeleteView(LoginRequiredMixin, DeleteView):
+    model = UserAddress
+    template_name = ...
+    success_url = reverse_lazy("address-list")
+
+    def get_object(self, queryset=None):
+        address = UserAddressCrud.get_address_by_id(self.kwargs.get("pk"))
+        if not address:
+            raise Http404("Адрес не найден")
+
+        if not UserAddressCrud.validate_address_owner(address, self.request.user):
+            raise PermissionDenied
+
+        return address
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success = UserAddressCrud.delete_address(self.object.id)
+
+        if success:
+            messages.success(request, "Адрес успешно удален")
+        else:
+            messages.error(request, "Ошибка при удалении адреса")
+
         return redirect(self.success_url)

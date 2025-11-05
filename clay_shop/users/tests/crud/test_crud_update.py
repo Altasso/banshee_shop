@@ -1,7 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from users.services.crud import CrudUser
+from users.services.user_crud import CrudUser
 
 
 @pytest.mark.django_db

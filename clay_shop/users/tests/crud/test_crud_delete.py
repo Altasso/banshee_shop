@@ -1,6 +1,6 @@
 import pytest
 
-from users.services.crud import CrudUser
+from users.services.user_crud import CrudUser
 
 
 @pytest.mark.django_db

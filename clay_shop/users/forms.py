@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import User
+from .models import User, UserAddress, UserProfile
 
 
 class UserCreateForm(forms.ModelForm):
@@ -47,4 +47,48 @@ class UserUpdateForm(forms.ModelForm):
             "first_name": forms.TextInput(attrs={"class": "form-control"}),
             "last_name": forms.TextInput(attrs={"class": "form-control"}),
             "role": forms.Select(attrs={"class": "form-control"}),
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["phone", "date_of_birth", "preferred_delivery_method"]
+        widgets = {
+            "phone": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "+7 (999) 999-99-99"}
+            ),
+            "date_of_birth": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
+            "preferred_delivery_method": forms.Select(attrs={"class": "form-control"}),
+        }
+        labels = {
+            "phone": "Телефон",
+            "date_of_birth": "Дата рождения",
+            "preferred_delivery_method": "Предпочитаемый способ доставки",
+        }
+
+
+class UserAddressForm(forms.ModelForm):
+    class Meta:
+        model = UserAddress
+        fields = ["title", "address", "is_default"]
+        widgets = {
+            "title": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Дом, Работа, и т.д."}
+            ),
+            "address": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Полный адрес доставки",
+                }
+            ),
+            "is_default": forms.CheckboxInput(attrs={"class": "forms-check-input"}),
+        }
+        label = {
+            "title": "Название",
+            "address": "Адрес",
+            "is_default": "Использовать по умолчанию",
         }

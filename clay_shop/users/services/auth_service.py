@@ -55,13 +55,11 @@ class AuthService:
         # Seller
         seller_group, _ = Group.objects.get_or_create(name=User.SELLER)
         seller_perms = Permission.objects.filter(
-            content_type=content_type,
-            codename__in=['view_user']
+            content_type=content_type, codename__in=["view_user"]
         )
         seller_group.permissions.set(seller_perms)
         manage_products = Permission.objects.get(
-            content_type=content_type,
-            codename='can_manage_products'
+            content_type=content_type, codename="can_manage_products"
         )
         seller_group.permissions.add(manage_products)
 
