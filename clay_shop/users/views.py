@@ -13,12 +13,13 @@ from django.views.generic import (
 )
 
 from .forms import UserCreateForm, UserUpdateForm
+from .mixins import AdminRequiredMixin, OwnerOrAdminMixin
 from .models import User
 from .services.crud import CrudUser
 
 
 # Create your views here.
-class UserListView(ListView):
+class UserListView(AdminRequiredMixin, ListView):
     model = User
     template_name = ...
     context_object_name = "users"
@@ -28,7 +29,7 @@ class UserListView(ListView):
         return CrudUser.get_all_users()
 
 
-class UserDetailView(DetailView):
+class UserDetailView(OwnerOrAdminMixin, DetailView):
     model = User
     template_name = "users/templates/profile"
     context_object_name = "user"
@@ -40,7 +41,7 @@ class UserDetailView(DetailView):
         return user
 
 
-class UserCreateView(SuccessMessageMixin, CreateView):
+class UserCreateView(AdminRequiredMixin, SuccessMessageMixin, CreateView):
     model = User
     form_class = UserCreateForm
     template_name = ...
@@ -58,7 +59,7 @@ class UserCreateView(SuccessMessageMixin, CreateView):
             return self.form_invalid(form)
 
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(OwnerOrAdminMixin, SuccessMessageMixin, UpdateView):
     model = User
     form_class = UserUpdateForm
     template_name = ...
@@ -86,7 +87,7 @@ class UserUpdateView(UpdateView):
             form.add_error(None, e)
             return self.form_invalid(form)
 
-class UserDeleteView(DeleteView):
+class UserDeleteView(AdminRequiredMixin, DeleteView):
     model = User
     template_name = ...
     success_url = reverse_lazy('user-list')

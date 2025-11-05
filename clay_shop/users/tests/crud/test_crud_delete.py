@@ -1,4 +1,5 @@
 import pytest
+
 from users.services.crud import CrudUser
 
 

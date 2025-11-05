@@ -5,21 +5,48 @@ from django.db import models
 
 # Create your models here.
 class User(AbstractUser):
+
+    CUSTOMER = 'customer'
+    SELLER = 'seller'
+    ADMIN = 'admin'
+
+    ROLE_CHOICES = [
+        (CUSTOMER, 'Покупатель'),
+        (SELLER, 'Продавец'),
+        (ADMIN, 'Админ'),
+    ]
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=31)
     last_name = models.CharField(max_length=31)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
-    role = models.CharField(max_length=31, default="customer")
+    role = models.CharField(max_length=31, choices=ROLE_CHOICES, default=CUSTOMER)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
+    class Meta:
+        permissions = [
+            ("can_verify_users", "Может верифицировать пользователей"),
+            ("can_manage_products", "Может управлять товарами"),
+            ("can_view_all_orders", "Может просматривать все заказы"),
+        ]
+
     def __str__(self):
         return f"{self.first_name} {self.last_name} - ({self.email})"
 
+    @property
+    def is_customer(self):
+        return self.role == self.CUSTOMER
+    @property
+    def is_seller(self):
+            return self.role == self.SELLER
+    @property
+    def is_admin(self):
+            return self.role == self.ADMIN or self.is_superuser
 
 class UserAddress(models.Model):
     user_id = models.ForeignKey(
