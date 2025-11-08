@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои адреса - Clay Art{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'user-detail' request.user.pk %}">Профиль</a></li>
+                <li class="breadcrumb-item active">Адреса доставки</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Мои адреса доставки</h1>
+            <a href="{% url 'address-create' %}" class="btn btn-primary">
+                ➕ Добавить адрес
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% if addresses %}
+        {% for address in addresses %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">
+                            📍 {{ address.address_type|default:"Адрес" }}
+                        </h5>
+                        {% if address.is_default %}
+                        <span class="badge bg-success">По умолчанию</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-2">
+                        <strong style="color: var(--moss-green);">Получатель:</strong>
+                        <p class="mb-1">{{ address.full_name }}</p>
+                    </div>
+
+                    <div class="mb-2">
+                        <strong style="color: var(--moss-green);">Адрес:</strong>
+                        <p class="mb-1">
+                            {% if address.country %}{{ address.country }}, {% endif %}
+                            {% if address.city %}{{ address.city }}, {% endif %}
+                            {% if address.postal_code %}{{ address.postal_code }}, {% endif %}
+                            <br>{{ address.address_line1 }}
+                            {% if address.address_line2 %}
+                            <br>{{ address.address_line2 }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    {% if address.phone %}
+                    <div class="mb-3">
+                        <strong style="color: var(--moss-green);">Телефон:</strong>
+                        <p class="mb-0">{{ address.phone }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if address.notes %}
+                    <div class="mb-3">
+                        <strong style="color: var(--moss-green);">Примечания:</strong>
+                        <p class="mb-0 text-muted">{{ address.notes }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{% url 'address-update' address.pk %}" class="btn btn-warning btn-sm flex-grow-1">
+                            ✏️ Редактировать
+                        </a>
+                        <button 
+                            hx-delete="{% url 'address-delete' address.pk %}"
+                            hx-confirm="Вы уверены, что хотите удалить этот адрес?"
+                            hx-target="closest .col-lg-6"
+                            hx-swap="outerHTML swap:1s"
+                            class="btn btn-danger btn-sm">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Создан: {{ address.created_at|date:"d.m.Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div style="font-size: 4rem; color: var(--grey-green); margin-bottom: 1rem;">📦</div>
+                    <h4 style="color: var(--moss-green);">У вас пока нет сохраненных адресов</h4>
+                    <p class="text-muted mb-4">Добавьте адрес доставки для быстрого оформления заказов</p>
+                    <a href="{% url 'address-create' %}" class="btn btn-primary">
+                        ➕ Добавить первый адрес
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% if addresses %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <strong>💡 Совет:</strong> Отметьте один из адресов как "По умолчанию" для автоматического выбора при оформлении заказа.
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(90, 112, 80, 0.25);
+    }
+</style>
+{% endblock %}

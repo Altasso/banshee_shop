@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактирование профиля - Clay Art{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'user-detail' request.user.pk %}">Профиль</a></li>
+                <li class="breadcrumb-item active">Редактирование профиля</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">✏️ Редактирование профиля</h3>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted mb-4">Обновите информацию о себе для персонализации опыта покупок</p>
+
+                <form method="post" enctype="multipart/form-data" hx-post="{{ request.path }}" hx-target="this" hx-swap="outerHTML">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Avatar Section -->
+                    {% if form.avatar %}
+                    <div class="mb-4 text-center">
+                        <label class="form-label d-block">
+                            <strong style="color: var(--moss-green);">Аватар профиля</strong>
+                        </label>
+                        {% if object.avatar %}
+                        <div class="mb-3">
+                            <img src="{{ object.avatar.url }}" alt="Avatar" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--moss-green);">
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <div style="width: 120px; height: 120px; margin: 0 auto; background: linear-gradient(135deg, var(--moss-green), var(--warm-brown)); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 3rem; color: white;">
+                                    {{ request.user.first_name.0|default:request.user.username.0|upper }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {{ form.avatar }}
+                        {% if form.avatar.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.avatar.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <hr class="my-4">
+                    {% endif %}
+
+                    <!-- Phone Number -->
+                    {% if form.phone_number %}
+                    <div class="mb-3">
+                        <label for="{{ form.phone_number.id_for_label }}" class="form-label">
+                            📱 Номер телефона
+                        </label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.phone_number.errors }}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Используется для связи по заказам</small>
+                    </div>
+                    {% endif %}
+
+                    <!-- Date of Birth -->
+                    {% if form.date_of_birth %}
+                    <div class="mb-3">
+                        <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">
+                            🎂 Дата рождения
+                        </label>
+                        {{ form.date_of_birth }}
+                        {% if form.date_of_birth.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.date_of_birth.errors }}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Для персональных скидок в день рождения</small>
+                    </div>
+                    {% endif %}
+
+                    <!-- Bio -->
+                    {% if form.bio %}
+                    <div class="mb-3">
+                        <label for="{{ form.bio.id_for_label }}" class="form-label">
+                            📝 О себе
+                        </label>
+                        {{ form.bio }}
+                        {% if form.bio.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.bio.errors }}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Расскажите немного о себе (необязательно)</small>
+                    </div>
+                    {% endif %}
+
+                    <hr class="my-4">
+
+                    <!-- Preferences Section -->
+                    <h5 style="color: var(--moss-green);" class="mb-3">⚙️ Настройки уведомлений</h5>
+
+                    <div class="row mb-3">
+                        {% if form.newsletter_subscription %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card" style="background-color: var(--milk-white); border: 2px solid var(--grey-green);">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        {{ form.newsletter_subscription }}
+                                        <label class="form-check-label" for="{{ form.newsletter_subscription.id_for_label }}">
+                                            <strong>📧 Email-рассылка</strong>
+                                            <br>
+                                            <small class="text-muted">Получать новости и специальные предложения</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if form.order_notifications %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card" style="background-color: var(--milk-white); border: 2px solid var(--grey-green);">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        {{ form.order_notifications }}
+                                        <label class="form-check-label" for="{{ form.order_notifications.id_for_label }}">
+                                            <strong>🔔 Уведомления о заказах</strong>
+                                            <br>
+                                            <small class="text-muted">Получать SMS/Email о статусе заказов</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Additional fields (render any remaining fields) -->
+                    {% for field in form %}
+                        {% if field.name not in 'avatar,phone_number,date_of_birth,bio,newsletter_subscription,order_notifications' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                <span class="text-danger">*</span>
+                                {% endif %}
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary flex-grow-1 btn-lg">
+                            💾 Сохранить изменения
+                        </button>
+                        <a href="{% url 'user-detail' request.user.pk %}" class="btn btn-secondary btn-lg">
+                            ❌ Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Additional Info Card -->
+        <div class="card mt-4" style="background: linear-gradient(135deg, rgba(90, 112, 80, 0.05), rgba(166, 124, 82, 0.05));">
+            <div class="card-body">
+                <h6 style="color: var(--moss-green);">💡 Зачем заполнять профиль?</h6>
+                <ul class="mb-0">
+                    <li>Быстрое оформление заказов</li>
+                    <li>Персональные скидки в день рождения</li>
+                    <li>Актуальная информация о заказах</li>
+                    <li>Участие в программе лояльности</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select, textarea {
+        background-color: white;
+    }
+    
+    .form-control:focus, .form-select:focus, textarea:focus {
+        background-color: white;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--moss-green);
+        border-color: var(--moss-green);
+    }
+    
+    .form-check-input:focus {
+        border-color: var(--moss-green);
+        box-shadow: 0 0 0 0.2rem rgba(90, 112, 80, 0.25);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+    }
+
+    input[type="file"].form-control {
+        padding: 0.5rem;
+    }
+</style>
+{% endblock %}

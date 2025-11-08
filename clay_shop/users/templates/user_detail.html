@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль - {{ user.username }} - Clay Art{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                {% if request.user.is_staff %}
+                <li class="breadcrumb-item"><a href="{% url 'user-list' %}">Пользователи</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">{{ user.username }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Profile Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center p-4">
+                <div class="mb-3">
+                    <div style="width: 120px; height: 120px; margin: 0 auto; background: linear-gradient(135deg, var(--moss-green), var(--warm-brown)); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px var(--shadow-soft);">
+                        <span style="font-size: 3rem; color: white;">
+                            {{ user.first_name.0|default:user.username.0|upper }}
+                        </span>
+                    </div>
+                </div>
+                <h3 class="mb-2">{{ user.get_full_name|default:user.username }}</h3>
+                <p class="text-muted mb-3">@{{ user.username }}</p>
+                
+                <div class="mb-3">
+                    {% if user.is_superuser %}
+                    <span class="badge bg-danger">Администратор</span>
+                    {% elif user.is_staff %}
+                    <span class="badge bg-warning">Персонал</span>
+                    {% else %}
+                    <span class="badge bg-primary">Пользователь</span>
+                    {% endif %}
+                    
+                    {% if user.is_active %}
+                    <span class="badge bg-success">Активен</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Неактивен</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2">
+                    {% if request.user == user or request.user.is_staff %}
+                    <a href="{% url 'user-update' user.pk %}" class="btn btn-warning">
+                        ✏️ Редактировать профиль
+                    </a>
+                    {% endif %}
+                    
+                    {% if request.user == user %}
+                    <a href="{% url 'address-list' %}" class="btn btn-secondary">
+                        📍 Мои адреса
+                    </a>
+                    {% endif %}
+                    
+                    {% if request.user.is_staff and request.user != user %}
+                    <button 
+                        hx-delete="{% url 'user-delete' user.pk %}"
+                        hx-confirm="Вы уверены, что хотите удалить пользователя {{ user.username }}?"
+                        class="btn btn-danger">
+                        🗑️ Удалить пользователя
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Личная информация</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Имя</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.first_name|default:"Не указано" }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Фамилия</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.last_name|default:"Не указано" }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Email</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.email|default:"Не указано" }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Имя пользователя</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.username }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Дата регистрации</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.date_joined|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Последний вход</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">{{ user.last_login|date:"d.m.Y H:i"|default:"Никогда" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permissions Card (for staff only) -->
+        {% if request.user.is_staff %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Права доступа</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Суперпользователь</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">
+                            {% if user.is_superuser %}
+                            <span class="badge bg-success">Да</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Нет</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Персонал</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">
+                            {% if user.is_staff %}
+                            <span class="badge bg-success">Да</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Нет</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p class="mb-0 fw-bold" style="color: var(--moss-green);">Активен</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p class="mb-0">
+                            {% if user.is_active %}
+                            <span class="badge bg-success">Да</span>
+                            {% else %}
+                            <span class="badge bg-danger">Нет</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

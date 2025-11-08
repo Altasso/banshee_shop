@@ -1,4 +1,3 @@
-from distro import codename
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType

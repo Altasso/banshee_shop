@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -55,6 +56,13 @@ INSTALLED_APPS = [
     "users",
 ]
 
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'user-profile'
+LOGOUT_REDIRECT_URL = 'login'
+
+SESSION_COOKIE_AGE = 1209600
+SESSION_SAVE_EVERY_REQUEST = False
+
 AUTH_USER_MODEL = "users.User"
 
 # REST_FRAMEWORK = []
@@ -76,7 +84,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'general_templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -242,6 +250,14 @@ LOGGING = {
         "handlers": ["console"],
         "level": "INFO",
     },
+}
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'error',
 }
 
 INTERNAL_IPS = [

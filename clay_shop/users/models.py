@@ -71,7 +71,7 @@ class UserProfile(models.Model):
         User, on_delete=models.CASCADE, related_name="profile", primary_key=True
     )
     phone = models.CharField(max_length=15)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(null=True, blank=True)
     preferred_delivery_method = models.ForeignKey(
         DeliveryMethod,
         on_delete=models.CASCADE,

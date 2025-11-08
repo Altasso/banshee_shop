@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль - Clay Art{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Главная</a></li>
+                <li class="breadcrumb-item active">Мой профиль</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Profile Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, var(--moss-green), var(--warm-brown)); color: white;">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        {% if user.userprofile.avatar %}
+                        <img src="{{ user.userprofile.avatar.url }}" alt="Avatar" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 4px solid white;">
+                        {% else %}
+                        <div style="width: 100px; height: 100px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 2.5rem; color: var(--moss-green);">
+                                {{ user.first_name.0|default:user.username.0|upper }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col">
+                        <h2 class="mb-1" style="color: white;">{{ user.get_full_name|default:user.username }}</h2>
+                        <p class="mb-2">@{{ user.username }}</p>
+                        <div>
+                            {% if user.is_superuser %}
+                            <span class="badge bg-danger">Администратор</span>
+                            {% elif user.is_staff %}
+                            <span class="badge bg-warning">Персонал</span>
+                            {% else %}
+                            <span class="badge" style="background-color: var(--amber);">Покупатель</span>
+                            {% endif %}
+                            <span class="badge bg-light text-dark">С нами с {{ user.date_joined|date:"Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'user-update' user.pk %}" class="btn btn-light">
+                            ✏️ Редактировать
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Left Column -->
+    <div class="col-lg-4 mb-4">
+        <!-- Contact Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📞 Контактная информация</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Email</small>
+                    <strong>{{ user.email|default:"Не указан" }}</strong>
+                </div>
+                {% if user.userprofile.phone_number %}
+                <div class="mb-3">
+                    <small class="text-muted d-block">Телефон</small>
+                    <strong>{{ user.userprofile.phone_number }}</strong>
+                </div>
+                {% endif %}
+                {% if user.userprofile.date_of_birth %}
+                <div>
+                    <small class="text-muted d-block">Дата рождения</small>
+                    <strong>{{ user.userprofile.date_of_birth|date:"d.m.Y" }}</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Статистика</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="p-3" style="background-color: var(--milk-white); border-radius: 15px;">
+                            <h3 style="color: var(--moss-green); margin-bottom: 0.25rem;">0</h3>
+                            <small class="text-muted">Заказов</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="p-3" style="background-color: var(--milk-white); border-radius: 15px;">
+                            <h3 style="color: var(--warm-brown); margin-bottom: 0.25rem;">0</h3>
+                            <small class="text-muted">Отзывов</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3" style="background-color: var(--milk-white); border-radius: 15px;">
+                            <h3 style="color: var(--amber); margin-bottom: 0.25rem;">0₽</h3>
+                            <small class="text-muted">Потрачено</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3" style="background-color: var(--milk-white); border-radius: 15px;">
+                            <h3 style="color: var(--grey-green); margin-bottom: 0.25rem;">0</h3>
+                            <small class="text-muted">Бонусов</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">⚙️ Настройки</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>📧 Email-рассылка</strong>
+                        <br>
+                        <small class="text-muted">Новости и предложения</small>
+                    </div>
+                    <div>
+                        {% if user.userprofile.newsletter_subscription %}
+                        <span class="badge bg-success">Вкл</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Выкл</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>🔔 Уведомления</strong>
+                        <br>
+                        <small class="text-muted">О статусе заказов</small>
+                    </div>
+                    <div>
+                        {% if user.userprofile.order_notifications %}
+                        <span class="badge bg-success">Вкл</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Выкл</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <a href="{% url 'user-profile' %}" class="btn btn-secondary btn-sm w-100">
+                    Изменить настройки
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-8">
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <a href="{% url 'address-list' %}" class="text-decoration-none">
+                    <div class="card h-100 text-center" style="cursor: pointer; transition: all 0.3s;">
+                        <div class="card-body p-4">
+                            <div style="font-size: 2.5rem; color: var(--moss-green);">📍</div>
+                            <h6 class="mt-2 mb-0">Мои адреса</h6>
+                            <small class="text-muted">Управление адресами</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card h-100 text-center" style="cursor: pointer; transition: all 0.3s;">
+                        <div class="card-body p-4">
+                            <div style="font-size: 2.5rem; color: var(--warm-brown);">📦</div>
+                            <h6 class="mt-2 mb-0">Мои заказы</h6>
+                            <small class="text-muted">История покупок</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mb-3">
+                <a href="#" class="text-decoration-none">
+                    <div class="card h-100 text-center" style="cursor: pointer; transition: all 0.3s;">
+                        <div class="card-body p-4">
+                            <div style="font-size: 2.5rem; color: var(--amber);">❤️</div>
+                            <h6 class="mt-2 mb-0">Избранное</h6>
+                            <small class="text-muted">Понравившиеся товары</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- About Me -->
+        {% if user.userprofile.bio %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📝 О себе</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ user.userprofile.bio }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Orders -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📦 Последние заказы</h5>
+                <a href="#" class="btn btn-sm btn-primary">Все заказы</a>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-5">
+                    <div style="font-size: 3rem; color: var(--grey-green); margin-bottom: 1rem;">📦</div>
+                    <h5 style="color: var(--moss-green);">У вас пока нет заказов</h5>
+                    <p class="text-muted mb-3">Начните с просмотра нашего каталога уникальных изделий</p>
+                    <a href="#" class="btn btn-primary">
+                        🌿 Перейти в каталог
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reviews -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">⭐ Мои отзывы</h5>
+                <span class="badge bg-primary">0</span>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0">Вы еще не оставляли отзывов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    a .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(90, 112, 80, 0.25);
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.65rem;
+    }
+</style>
+{% endblock %}
