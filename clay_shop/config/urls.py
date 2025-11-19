@@ -23,6 +23,7 @@ from config.settings import DEBUG
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
+    # path('users/', include())
 ]
 if DEBUG:
     urlpatterns += debug_toolbar_urls()

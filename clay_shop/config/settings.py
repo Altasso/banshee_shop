@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # third-party apps
-    "rest_framework",
-    "drf_spectacular",
     "debug_toolbar",
     "django_htmx",
     # my apps
@@ -53,19 +51,20 @@ INSTALLED_APPS = [
     "orders",
     "core",
     "seller",
-    "users",
+    "users.apps.UsersConfig",
 ]
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'user-profile'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "user-profile"
+LOGOUT_REDIRECT_URL = "login"
 
 SESSION_COOKIE_AGE = 1209600
 SESSION_SAVE_EVERY_REQUEST = False
 
 AUTH_USER_MODEL = "users.User"
-
-# REST_FRAMEWORK = []
+AUTHENTICATION_BACKENDS = {
+    "django.contrib.auth.backends.ModelBackend",
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -76,7 +75,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    "django_htmx.middleware.HtmxMiddleware"
+    "django_htmx.middleware.HtmxMiddleware",
+    # my middleware
+    # "users.middleware.OrderVerificationMiddleware"
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -84,7 +85,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'general_templates'],
+        "DIRS": [BASE_DIR / "general_templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -253,13 +254,66 @@ LOGGING = {
 }
 
 MESSAGE_TAGS = {
-    messages.DEBUG: 'debug',
-    messages.INFO: 'info',
-    messages.SUCCESS: 'success',
-    messages.WARNING: 'warning',
-    messages.ERROR: 'error',
+    messages.DEBUG: "debug",
+    messages.INFO: "info",
+    messages.SUCCESS: "success",
+    messages.WARNING: "warning",
+    messages.ERROR: "error",
 }
 
 INTERNAL_IPS = [
     "127.0.0.1",
+    "localhost",
+    "0.0.0.0",
 ]
+
+DADATA_API_KEY = os.getenv("DADATA_API_TOKEN", default="")
+
+REDIS_URL = os.getenv("REDIS_URL", default="redis://127.0.0.1:6379/0")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PARSER_CLASS": "redis.connection.PythonParser",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 50,
+                "retry_on_timeout": True,
+            },
+        },
+        "KEY_PREFIX": "clayart",
+        "TIMEOUT": 3600,
+    }
+}
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = os.getenv("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL", default="Clay Art <noreply@clayart.ru>"
+)
+
+SITE_URL = os.getenv("SITE_URL", default="http:localhost:8000")
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", default="redis://redis:6379/1")
+CELERY_RESULT_BACKEND = os.getenv(
+    "CELERY_RESULT_BACKEND", default="redis://redis:6379/1"
+)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

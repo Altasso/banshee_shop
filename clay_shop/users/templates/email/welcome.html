@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добро пожаловать</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F6F3EA;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(90, 112, 80, 0.15);
+        }
+        .header {
+            background: linear-gradient(135deg, #5A7050 0%, #4a5d42 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333;
+        }
+        .content h2 {
+            color: #5A7050;
+            margin-top: 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #5A7050 0%, #4a5d42 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #F6F3EA;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🌿</div>
+            <h1>Добро пожаловать в Clay Art!</h1>
+        </div>
+        <div class="content">
+            <h2>Здравствуйте, {{ user_name }}! 👋</h2>
+            <p>Спасибо за регистрацию в нашем магазине уникальных изделий ручной работы из полимерной глины.</p>
+
+            <p>Теперь вы можете:</p>
+            <ul>
+                <li>📦 Заказывать уникальные изделия</li>
+                <li>💰 Получать персональные скидки</li>
+                <li>📍 Сохранять адреса доставки</li>
+                <li>🎁 Участвовать в программе лояльности</li>
+            </ul>
+
+            <p style="text-align: center;">
+                <a href="{{ site_url }}" class="button">Перейти в каталог</a>
+            </p>
+
+            <p>Если у вас есть вопросы, мы всегда рады помочь!</p>
+
+            <p>С уважением,<br><strong>Команда Clay Art</strong></p>
+        </div>
+        <div class="footer">
+            <p>Это автоматическое письмо, пожалуйста, не отвечайте на него.</p>
+            <p>&copy; 2025 Clay Art. Все права защищены.</p>
+        </div>
+    </div>
+</body>
+</html>

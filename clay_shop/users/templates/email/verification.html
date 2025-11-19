@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение Email</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F6F3EA;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(90, 112, 80, 0.15);
+        }
+        .header {
+            background: linear-gradient(135deg, #5A7050 0%, #4a5d42 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #5A7050 0%, #4a5d42 100%);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin: 30px 0;
+            font-size: 18px;
+        }
+        .footer {
+            background-color: #F6F3EA;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✉️ Подтвердите Email</h1>
+        </div>
+        <div class="content">
+            <h2>Здравствуйте, {{ user_name }}!</h2>
+            <p>Спасибо за регистрацию в Clay Art.</p>
+            <p>Нажмите на кнопку ниже, чтобы подтвердить ваш email:</p>
+
+            <a href="{{ verification_link }}" class="button">
+                ✅ Подтвердить Email
+            </a>
+
+            <p style="color: #999; font-size: 14px; margin-top: 30px;">
+                Если кнопка не работает, скопируйте ссылку:<br>
+                <span style="word-break: break-all;">{{ verification_link }}</span>
+            </p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Clay Art. Все права защищены.</p>
+        </div>
+    </div>
+</body>
+</html>

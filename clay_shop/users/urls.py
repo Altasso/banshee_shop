@@ -1,19 +1,25 @@
 from django.urls import path
 
-from .views import (
-    AuthLoginView,
-    AuthLogoutView,
+from users.views.address_views import (
     UserAddressCreateView,
     UserAddressDeleteView,
     UserAddressListView,
     UserAddressUpdateView,
-    UserCreateView,
+)
+from users.views.api_views import AddressAutocompleteView
+from users.views.auth_views import (
+    AuthLoginView,
+    AuthLogoutView,
+    ChangePasswordView,
+    UserRegistrationView,
+)
+from users.views.email_verify_views import EmailVerifyView, ResendVerificationEmailView
+from users.views.profile_views import UserProfileUpdateView, UserProfileView
+from users.views.user_views import (
     UserDeleteView,
     UserDetailView,
     UserListView,
-    UserProfileUpdateView,
-    UserProfileView,
-    UserUpdateView, UserRegistrationView,
+    UserUpdateView,
 )
 
 urlpatterns = [
@@ -21,6 +27,11 @@ urlpatterns = [
     path("login/", AuthLoginView.as_view(), name="login"),
     path("logout/", AuthLogoutView.as_view(), name="logout"),
     path("register/", UserRegistrationView.as_view(), name="user-create"),
+    path(
+        "change_password/",
+        ChangePasswordView.as_view(),
+        name="change-password",
+    ),
     # Профиль пользователя
     path("profile/", UserProfileView.as_view(), name="user-profile"),
     path("profile/edit/", UserProfileUpdateView.as_view(), name="user-profile-edit"),
@@ -41,5 +52,20 @@ urlpatterns = [
         "addresses/<int:pk>/delete/",
         UserAddressDeleteView.as_view(),
         name="address-delete",
+    ),
+    # Верификация email
+    path(
+        "email-verify/<uidb64>/<token>/", EmailVerifyView.as_view(), name="email-verify"
+    ),
+    path(
+        "resend-verification/",
+        ResendVerificationEmailView.as_view(),
+        name="resend-verification",
+    ),
+    # API
+    path(
+        "api/address-autocomplete/",
+        AddressAutocompleteView.as_view(),
+        name="address-autocomplete",
     ),
 ]

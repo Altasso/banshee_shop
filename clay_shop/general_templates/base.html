@@ -309,6 +309,20 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--warm-brown);
         }
+        .alert-warning {
+        background: linear-gradient(135deg, #f9e5c0 0%, #f5d99d 100%);
+        color: #333;
+        }
+
+        .alert-warning .btn-warning {
+            background: linear-gradient(135deg, var(--amber) 0%, #c49456 100%);
+            color: white;
+            border: none;
+        }
+
+        .alert-warning .btn-warning:hover {
+            background: linear-gradient(135deg, #c49456 0%, var(--amber) 100%);
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -330,33 +344,71 @@
                         <a class="nav-link" href="#">Каталог</a>
                     </li>
                     {% if user.is_authenticated %}
+                        {% if not user.is_verified %}
+                        <li class="nav-item">
+                            <span class="nav-link" style="color: #ffc107;">
+                                ⚠️ Email не подтвержден
+                            </span>
+                        </li>
+                        {% endif %}
+
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'user-profile' %}">Профиль</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'address-list' %}">Адреса</a>
-                        </li>
-                        {% if user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'user-list' %}">Пользователи</a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Выход</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Вход</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'user-create' %}">Регистрация</a>
-                        </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user-list' %}">Пользователи</a>
+                    </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="#"
+                           hx-post="{% url 'logout' %}"
+                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                           hx-target="body"
+                           style="cursor: pointer;">
+                            Выход
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Вход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user-create' %}">Регистрация</a>
+                    </li>
+                {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-
+    <!-- Email Verification Banner -->
+    {% if user.is_authenticated and not user.is_verified %}
+    <div class="container mt-3">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert"
+             style="border-radius: 15px; border: 2px solid var(--amber);">
+            <div class="d-flex align-items-center">
+                <div style="font-size: 2rem; margin-right: 1rem;">📧</div>
+                <div class="flex-grow-1">
+                    <h5 class="alert-heading mb-1" style="color: var(--moss-green);">
+                        Email не подтвержден
+                    </h5>
+                    <p class="mb-2">
+                        Для оформления заказов необходимо подтвердить email.
+                        Проверьте почту и перейдите по ссылке из письма.
+                    </p>
+                    <form method="post" action="{% url 'resend-verification' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-warning">
+                            🔄 Отправить повторно
+                        </button>
+                    </form>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <!-- Messages -->
     {% if messages %}
     <div class="container mt-4">

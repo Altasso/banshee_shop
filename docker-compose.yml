@@ -1,0 +1,100 @@
+services:
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME:-clay_shop_db}
+      - POSTGRES_USER=${DB_USER:-clay_shop_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-clay_shop_password}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg-isready -U ${DB_USER:-clay_shop_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/clay_shop
+    command: ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - ./clay_shop:/app/clay_shop
+      - uv_cache:/root/.cache/uv
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-clay_shop_user}:${DB_PASSWORD:-clay_shop_password}@db:5432/{DB_NAME:-clay_shop_db}
+      - REDIS_URL=redis://redis:6379/0
+      - PYTHONPATH=/app/clay_shop
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/clay_shop
+    command: ["uv", "run", "celery", "-A", "config", "worker", "--loglevel=info"]
+    volumes:
+      - ./clay_shop:/app/clay_shop
+      - uv_cache:/root/.cache/uv
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-myproject_user}:${DB_PASSWORD:-change_me_in_production}@db:5432/${DB_NAME:-myproject_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - PYTHONPATH=/app/clay_shop
+    depends_on:
+      - db
+      - redis
+      - web
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/clay_shop
+    command: ["uv", "run", "celery", "-A", "config", "beat", "--loglevel=info"]
+    volumes:
+      - ./clay_shop:/app/clay_shop
+      - uv_cache:/root/.cache/uv
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-myproject_user}:${DB_PASSWORD:-change_me_in_production}@db:5432/${DB_NAME:-myproject_db}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - PYTHONPATH=/app/clay_shop
+    depends_on:
+      - db
+      - redis
+      - celery_worker
+
+volumes:
+  postgres_data:
+  redis_data:
+  uv_cache:

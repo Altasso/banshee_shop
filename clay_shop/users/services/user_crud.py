@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from users.models import User
 
 
-class CrudUser:
+class UserCrud:
     @staticmethod
     def get_all_users() -> QuerySet[User]:
         return User.objects.all().order_by("-created_at")
@@ -12,7 +12,7 @@ class CrudUser:
     @staticmethod
     def get_user_by_id(user_id: int) -> User | None:
         try:
-            return User.objects.get(id=user_id)
+            return User.objects.select_related("profile").get(id=user_id)
         except User.DoesNotExist:  # type: ignore
             return None
 
@@ -40,7 +40,7 @@ class CrudUser:
 
     @staticmethod
     def update_user(user_id: int, data: dict) -> User | None:
-        user = CrudUser.get_user_by_id(user_id)
+        user = UserCrud.get_user_by_id(user_id)
         if not user:
             return None
 
@@ -61,7 +61,7 @@ class CrudUser:
 
     @staticmethod
     def delete_user(user_id: int) -> bool:
-        user = CrudUser.get_user_by_id(user_id)
+        user = UserCrud.get_user_by_id(user_id)
         if user:
             user.delete()
             return True
@@ -69,7 +69,7 @@ class CrudUser:
 
     @staticmethod
     def activate_user(user_id: int) -> User | None:
-        user = CrudUser.get_user_by_id(user_id)
+        user = UserCrud.get_user_by_id(user_id)
         if user:
             user.is_active = True
             user.save()
@@ -77,7 +77,7 @@ class CrudUser:
 
     @staticmethod
     def deactivate_user(user_id: int) -> User | None:
-        user = CrudUser.get_user_by_id(user_id)
+        user = UserCrud.get_user_by_id(user_id)
         if user:
             user.is_active = False
             user.save()
@@ -85,7 +85,7 @@ class CrudUser:
 
     @staticmethod
     def verify_user(user_id: int) -> User | None:
-        user = CrudUser.get_user_by_id(user_id)
+        user = UserCrud.get_user_by_id(user_id)
         if user:
             user.is_verified = True
             user.save()

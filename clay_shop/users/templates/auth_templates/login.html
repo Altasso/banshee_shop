@@ -36,13 +36,13 @@
                     <!-- Username/Email -->
                     <div class="mb-3">
                         <label for="{{ form.username.id_for_label }}" class="form-label">
-                            👤 Имя пользователя или Email
+                            👤 Ваш Email
                         </label>
                         <input type="text" 
                                name="{{ form.username.name }}" 
                                class="form-control form-control-lg" 
                                id="{{ form.username.id_for_label }}"
-                               placeholder="Введите имя пользователя"
+                               placeholder="Введите ваш email"
                                required
                                autofocus>
                         {% if form.username.errors %}

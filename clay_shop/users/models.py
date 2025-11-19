@@ -33,6 +33,8 @@ class User(AbstractUser):
             ("can_manage_products", "Может управлять товарами"),
             ("can_view_all_orders", "Может просматривать все заказы"),
         ]
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - ({self.email})"
@@ -46,7 +48,7 @@ class User(AbstractUser):
         return self.role == self.SELLER
 
     @property
-    def is_admin(self):
+    def is_admin_role(self):
         return self.role == self.ADMIN or self.is_superuser
 
 

@@ -1,34 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 
 from users.models import User
+from users.services.user_crud import UserCrud
 
 
 class AuthService:
-    @staticmethod
-    def login_user(
-        request: HttpRequest, email: str, password: str
-    ) -> tuple[bool, str, User | None]:
-        user = authenticate(request, username=email, password=password)
 
-        if not user:
-            return False, "Неверный email или пароль", None
-
-        if not user.is_active:
-            return False, "Аккаунт деактивирован", None
-
-        if not user.is_verified:
-            return False, "Email не верифицирован", None
-
-        login(request, user)
-
-        return True, "Успешная авторизация", user
-
-    @staticmethod
-    def logout(request: HttpRequest) -> None:
-        logout(request)
 
     @staticmethod
     def assign_role_group(user: User) -> None:
