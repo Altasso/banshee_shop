@@ -44,7 +44,7 @@ class EmailService:
             subject = "Подтвердите ваш email"
 
             html_content = render_to_string(
-                "emails/verification.html",
+                "email/verification.html",
                 {
                     "user_name": user_name,
                     "verification_link": verification_link,
@@ -54,13 +54,13 @@ class EmailService:
             text_content = f"""
                 Здравствуйте, {user_name}!
 
-                Спасибо за регистрацию в Clay Art.
+                Спасибо за регистрацию в {settings.SITE_NAME}.
 
                 Подтвердите ваш email, перейдя по ссылке:
                 {verification_link}
 
                 С уважением,
-                Команда Clay Art
+                Команда {settings.SITE_NAME}
                 """
 
             email = EmailMultiAlternatives(

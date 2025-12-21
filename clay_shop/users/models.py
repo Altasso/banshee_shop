@@ -22,7 +22,7 @@ class User(AbstractUser):
     is_verified = models.BooleanField(default=False)
     role = models.CharField(max_length=31, choices=ROLE_CHOICES, default=CUSTOMER)
     created_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]
@@ -76,7 +76,7 @@ class UserProfile(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     preferred_delivery_method = models.ForeignKey(
         DeliveryMethod,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="preferred_by_users",

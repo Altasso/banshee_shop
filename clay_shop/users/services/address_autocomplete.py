@@ -86,15 +86,15 @@ class AddressAutocompleteService:
                 {
                     "value": suggestion.get("value", ""),
                     "unrestricted_value": suggestion.get("unrestricted_value", ""),
-                    "postal_code": suggestion.get("postal_code", ""),
-                    "country": suggestion.get("country", ""),
-                    "region": suggestion.get("region", ""),
-                    "city": suggestion.get("city", ""),
-                    "street": suggestion.get("street", ""),
-                    "house": suggestion.get("house", ""),
-                    "flat": suggestion.get("flat", ""),
-                    "geo_lat": suggestion.get("geo_lat", ""),
-                    "geo_lon": suggestion.get("geo_lon", ""),
+                    "postal_code": data.get("postal_code", ""),
+                    "country": data.get("country", ""),
+                    "region": data.get("region_with_type", ""),
+                    "city": data.get("city", ""),
+                    "street": data.get("street", ""),
+                    "house": data.get("house", ""),
+                    "flat": data.get("flat", ""),
+                    "geo_lat": data.get("geo_lat"),
+                    "geo_lon": data.get("geo_lon"),
                 }
             )
         return formatted

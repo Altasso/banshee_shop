@@ -4,7 +4,7 @@ from django.urls import resolve
 
 
 class OrderVerificationMiddleware:
-    VIRIFICATION_REQUIRED_URLS = [
+    VERIFICATION_REQUIRED_URLS = [
         "order-create",
         "order-checkout",
         "cart-checkout",
@@ -22,7 +22,7 @@ class OrderVerificationMiddleware:
             except:
                 url_name = None
 
-            if url_name in self.VIRIFICATION_REQUIRED_URLS:
+            if url_name in self.VERIFICATION_REQUIRED_URLS:
                 messages.warning(
                     request,
                     "⚠️ Для оформления заказа необходимо подтвердить email. "

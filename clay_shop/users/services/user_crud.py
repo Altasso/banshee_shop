@@ -60,14 +60,6 @@ class UserCrud:
         return user
 
     @staticmethod
-    def delete_user(user_id: int) -> bool:
-        user = UserCrud.get_user_by_id(user_id)
-        if user:
-            user.delete()
-            return True
-        return False
-
-    @staticmethod
     def activate_user(user_id: int) -> User | None:
         user = UserCrud.get_user_by_id(user_id)
         if user:
@@ -80,13 +72,5 @@ class UserCrud:
         user = UserCrud.get_user_by_id(user_id)
         if user:
             user.is_active = False
-            user.save()
-        return user
-
-    @staticmethod
-    def verify_user(user_id: int) -> User | None:
-        user = UserCrud.get_user_by_id(user_id)
-        if user:
-            user.is_verified = True
             user.save()
         return user

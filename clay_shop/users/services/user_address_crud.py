@@ -16,13 +16,6 @@ class UserAddressCrud:
             return None
 
     @staticmethod
-    def get_default_address(user: User) -> UserAddress | None:
-        try:
-            return UserAddress.objects.get(user_id=user, is_default=True)
-        except UserAddress.DoesNotExist:
-            return None
-
-    @staticmethod
     @transaction.atomic
     def create_address(user: User, data: dict) -> UserAddress:
         is_default = data.get("is_default", False)
@@ -62,22 +55,6 @@ class UserAddressCrud:
             address.is_default = True
 
         address.save()
-        return address
-
-    @staticmethod
-    @transaction.atomic
-    def set_default_address(address_id: int) -> UserAddress | None:
-        address = UserAddressCrud.get_address_by_id(address_id)
-        if not address:
-            return None
-
-        UserAddress.objects.filter(user_id=address.user_id, is_default=True).update(
-            is_default=False
-        )
-
-        address.is_default = True
-        address.save()
-
         return address
 
     @staticmethod
